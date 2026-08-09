@@ -63,6 +63,18 @@
   /* Codex composer fill is white in light (= canvas); see element rule below */
   --composer-surface: #ffffff;
 
+  /* Component-only values with no distinct bb token */
+  --codex-soft-border: color-mix(in oklab, var(--ink) 8%, transparent);
+  --codex-settings-control: color-mix(in oklab, var(--ink) 2%, transparent);
+  --codex-button-fill: color-mix(in oklab, var(--ink) 5%, transparent);
+  --codex-button-fill-hover: color-mix(in oklab, var(--ink) 10%, transparent);
+  --codex-switch-off: color-mix(in oklab, var(--ink) 10%, transparent);
+  --codex-user-bubble: color-mix(in oklab, var(--ink) 5%, transparent);
+  --codex-inline-code: color-mix(in oklab, var(--ink) 9%, transparent);
+  --codex-worked-metadata: color-mix(in srgb, var(--ink) 65%, transparent);
+  --codex-file-path: color-mix(in srgb, var(--ink) 70%, transparent);
+  --codex-transcript-link: #2e82d2;
+
   /* Text tiers — text-secondary (65%) / text-tertiary (50%), alpha of ink */
   --muted-foreground: color-mix(in srgb, var(--ink) 65%, transparent);
   --subtle-foreground: color-mix(in srgb, var(--ink) 50%, transparent);
@@ -120,6 +132,12 @@
   --popover: #2d2d2d;                 /* measured on a live [role=menu]/composer (oklab base) */
   --composer-surface: #2d2d2d;        /* Codex composer fill (see element rule below) */
 
+  /* Dark variants of component-only values */
+  --codex-settings-control: color-mix(in oklab, var(--ink) 3%, transparent);
+  --codex-inline-code: color-mix(in oklab, var(--ink) 10.7%, transparent);
+  --codex-worked-metadata: color-mix(in srgb, var(--ink) 60%, transparent);
+  --codex-transcript-link: #9ccfff;
+
   /* input-border */
   --input: color-mix(in oklab, var(--ink) 16%, transparent);
 
@@ -156,12 +174,115 @@
 }
 
 /*
- * Element-level "hack": bb exposes no composer/input fill token — the PromptBox
- * is painted with bg-background (== --canvas). The custom theme is injected as
- * the LAST stylesheet, so a rule here out-orders the Tailwind .bg-background
- * utility (equal specificity, later source wins). We target the stable
- * data-promptbox hook to give the composer Codex's elevated fill.
+ * Targeted component rules for Codex roles without a one-to-one bb token.
+ * The custom theme is injected as the last stylesheet, so these rules out-order
+ * the corresponding Tailwind utilities without changing unrelated consumers.
  */
+
+/* Sidebar thread titles stay full foreground in every interaction state. */
+.bb-sidebar-hover-actions-row {
+  color: var(--sidebar-foreground);
+}
+
+/* Codex's right-side panel uses text alone to indicate the active/hovered tab. */
+[class~="group/tab-pill"],
+[class~="group/tab-pill"]:hover {
+  background-color: transparent;
+}
+
+/* Composer: translucent elevated surface, no ordinary border. */
 [data-promptbox] {
   background-color: var(--composer-surface);
+  border: 0;
+  box-shadow:
+    0 0 0 0.5px var(--codex-soft-border),
+    0 3px 7.5px rgb(0 0 0 / 4%),
+    0 0 20px rgb(0 0 0 / 5%);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* Menus use the same fine outline language with a smaller blur. */
+[role="menu"] {
+  border: 0;
+  box-shadow:
+    0 0 0 0.5px var(--codex-soft-border),
+    0 8px 16px -4px rgb(0 0 0 / 12%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* Settings cards and their secondary copy. */
+main .rounded-lg.border.border-border.bg-card {
+  border-color: var(--codex-soft-border);
+}
+
+main .bg-card [class~="text-subtle-foreground/75"] {
+  color: var(--muted-foreground);
+}
+
+/* Select-style Settings controls. */
+main .bg-card button[aria-haspopup="menu"] {
+  background-color: var(--codex-settings-control);
+  border-color: var(--codex-soft-border);
+}
+
+main .bg-card button[aria-haspopup="menu"]:hover,
+main .bg-card button[aria-haspopup="menu"][data-state="open"] {
+  background-color: var(--sidebar-accent);
+}
+
+/* Switch track colors. Thumb treatment remains separate and intentionally untouched. */
+main .bg-card [role="switch"][data-state="checked"] {
+  background-color: #339cff;
+}
+
+main .bg-card [role="switch"][data-state="unchecked"] {
+  background-color: var(--codex-switch-off);
+}
+
+/* Visible Settings card actions use a faint fill and transparent border. */
+main .bg-card button[class~="border-input"][class~="bg-transparent"] {
+  background-color: var(--codex-button-fill);
+  border-color: transparent;
+  color: var(--foreground);
+}
+
+main .bg-card button[class~="border-input"][class~="bg-transparent"]:hover {
+  background-color: var(--codex-button-fill-hover);
+}
+
+/* Icon-only Settings actions are tertiary until their component hover. */
+main .bg-card button[class~="size-7"][class~="text-muted-foreground"] {
+  background-color: transparent;
+  color: var(--subtle-foreground);
+}
+
+main .bg-card button[class~="size-7"][class~="text-muted-foreground"]:hover {
+  background-color: var(--sidebar-accent);
+  color: var(--subtle-foreground);
+}
+
+/* Transcript-specific text and surfaces. */
+[data-timeline-row-list] [title^="Worked for"] > span {
+  color: var(--codex-worked-metadata);
+}
+
+[data-markdown-preview] a {
+  color: var(--codex-transcript-link);
+}
+
+[data-timeline-row-list] [data-icon="FileText"] + span > span:last-child {
+  color: var(--codex-file-path);
+}
+
+[data-markdown-preview] :not(pre) > code {
+  background-color: var(--codex-inline-code);
+}
+
+/* User messages are 20px, borderless, 5%-foreground bubbles. */
+[data-timeline-row-list] div[class~="rounded-xl"][class~="border-border-seam"][class~="bg-surface-recessed"] {
+  background-color: var(--codex-user-bubble);
+  border: 0;
+  border-radius: 20px;
 }
