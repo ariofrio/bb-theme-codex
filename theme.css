@@ -1,0 +1,158 @@
+/*
+ * codex — bb theme replicating the OpenAI Codex desktop app.
+ *
+ * Values verified against the LIVE Codex app DOM (not just its stylesheet, and
+ * not pixel-sampled): launched Codex with --remote-debugging-port, read the
+ * resolved computed value of each design token at :root via CDP, for BOTH
+ * appearances (dark = OS dark; light = read after flipping OS appearance, then
+ * reverted). Role attribution was checked by inspecting real elements
+ * (--color-token-primary/link on actual links, main-surface on the content
+ * pane, etc.).
+ *
+ * Notes on Codex specifics that don't map 1:1 to bb:
+ *   - Sidebar: Codex renders it with a native macOS vibrancy material; the DOM
+ *     side-bar-background token (#141414 dark / #f6f6f6 light) is the base under
+ *     that material. bb has no vibrancy yet, so it shows the base directly.
+ *   - Accent vs button: Codex's interactive accent / links / focus is blue
+ *     (--color-token-primary), but its primary *button* is monochrome
+ *     (white on dark / near-black on light). bb funnels links+focus+selection+
+ *     buttons through one --primary, so --primary = the blue accent;
+ *     --primary-foreground uses Codex's resolved button-foreground.
+ *   - Composer: Codex uses a rounded translucent *fill* with no border; bb
+ *     draws a bordered field, so --input carries Codex's input-border value.
+ *   - --ansi-bg-fg-* (readable text on an ANSI background) has no Codex token
+ *     (computed live by the terminal) and is intentionally omitted.
+ *
+ * Role checks by driving the live app (CDP clicks + node reads):
+ *   - --primary/--file-accent: real links/icons compute --color-token-primary.
+ *   - --popover: opened a real [role=menu]; it renders the same oklab base as
+ *     the composer (~#2d2d2d), NOT --color-token-menu-background (#363636).
+ *   - --diff-added/removed: the React diff uses the Tailwind utility
+ *     .bg-[var(--color-token-diff-editor-inserted|removed-line-background)]
+ *     (distinct from Monaco's --vscode-diffEditor-* and --color-editor-added).
+ *   - --pr-merged: bb-only. Codex has NO merged-PR color; its purple is a
+ *     general accent (--color-accent-purple/--color-text-discovery/charts).
+ *   - --attention: bb-only "amber dot"; mapped to Codex's caution amber
+ *     (the nearest semantic), not a dedicated attention token.
+ *
+ * Light/dark mode is a per-client setting; this one stylesheet handles both.
+ */
+
+:root, .light {
+  /* Anchors — main-surface-primary / foreground */
+  --canvas: #ffffff;
+  --ink: #1a1c1f;
+
+  /* Accent — color-token-primary / color-border-focus */
+  --primary: #339cff;
+  --primary-foreground: #ffffff;      /* button-foreground (light) */
+  --ring: #339cff;
+  --sidebar-ring: #339cff;
+
+  /* side-bar-background */
+  --sidebar: #f6f6f6;
+
+  /* input-border */
+  --input: color-mix(in oklab, var(--ink) 12%, transparent);
+
+  /* Codex composer fill is white in light (= canvas); see element rule below */
+  --composer-surface: #ffffff;
+
+  /* Text tiers — text-secondary (65%) / text-tertiary (50%), alpha of ink */
+  --muted-foreground: color-mix(in srgb, var(--ink) 65%, transparent);
+  --subtle-foreground: color-mix(in srgb, var(--ink) 50%, transparent);
+
+  /* Semantic / status */
+  --destructive: #e02e2a;             /* danger-solid */
+  --destructive-foreground: #ffffff;  /* button-foreground */
+  --destructive-text: #e02e2a;        /* text-danger */
+  --warning: #e25507;                 /* warning-solid */
+  --warning-text: #e25507;            /* text-warning */
+  --attention: #ffc300;               /* caution-solid */
+  --success: #008635;                 /* success-solid */
+  --diff-added: color-mix(in oklab, #00a240 15%, transparent);   /* diff inserted-line */
+  --diff-removed: color-mix(in oklab, #ba2623 15%, transparent); /* diff removed-line */
+  --pr-merged: #924ff7;               /* discovery-solid */
+  --file-accent: #339cff;             /* color-token-primary */
+
+  /* Terminal — Codex light ANSI palette (embedded VS Code terminal.ansi*) */
+  --ansi-0:  #000000;
+  --ansi-1:  #d53538;
+  --ansi-2:  #008809;
+  --ansi-3:  #bd5800;
+  --ansi-4:  #001bcb;
+  --ansi-5:  #751ed9;
+  --ansi-6:  #0071ea;
+  --ansi-7:  #666666;
+  --ansi-8:  #000000;
+  --ansi-9:  #f44a4c;
+  --ansi-10: #59d24e;
+  --ansi-11: #f87915;
+  --ansi-12: #006aff;
+  --ansi-13: #9840ff;
+  --ansi-14: #20b8ff;
+  --ansi-15: #828282;
+}
+
+.dark {
+  /* Anchors — main-surface-primary / foreground */
+  --canvas: #181818;
+  --ink: #ffffff;
+
+  /* Accent — color-token-primary; focus = accent @76% */
+  --primary: #83c3ff;
+  --primary-foreground: #0d0d0d;      /* button-foreground (dark) */
+  --ring: color-mix(in srgb, #83c3ff 76%, transparent);   /* color-border-focus */
+  --sidebar-ring: color-mix(in srgb, #83c3ff 76%, transparent);
+
+  /* side-bar-background (base under Codex's vibrancy material) */
+  --sidebar: #141414;
+  --card: #282828;                    /* elevated-secondary-opaque */
+  --popover: #2d2d2d;                 /* measured on a live [role=menu]/composer (oklab base) */
+  --composer-surface: #2d2d2d;        /* Codex composer fill (see element rule below) */
+
+  /* input-border */
+  --input: color-mix(in oklab, var(--ink) 16%, transparent);
+
+  /* Semantic / status */
+  --destructive: #ff6764;             /* danger-solid */
+  --destructive-foreground: #0d0d0d;  /* button-foreground */
+  --destructive-text: #ff6764;        /* text-danger */
+  --warning: #fb6a22;                 /* warning-solid */
+  --warning-text: #ff8549;            /* text-warning */
+  --attention: #ffd240;               /* caution-solid */
+  --success: #008635;                 /* success-solid */
+  --diff-added: color-mix(in oklab, #40c977 23%, transparent);   /* diff inserted-line */
+  --diff-removed: color-mix(in oklab, #fa423e 23%, transparent); /* diff removed-line */
+  --pr-merged: #ad7bf9;               /* discovery-solid */
+  --file-accent: #83c3ff;             /* color-token-primary */
+
+  /* Terminal — Codex dark ANSI palette (embedded VS Code terminal.ansi*) */
+  --ansi-0:  #ffffff;
+  --ansi-1:  #f67576;
+  --ansi-2:  #85df7b;
+  --ansi-3:  #fa994c;
+  --ansi-4:  #3d8dff;
+  --ansi-5:  #b06dff;
+  --ansi-6:  #6dcbf4;
+  --ansi-7:  #999999;
+  --ansi-8:  #000000;
+  --ansi-9:  #f44a4c;
+  --ansi-10: #59d24e;
+  --ansi-11: #f87915;
+  --ansi-12: #006aff;
+  --ansi-13: #9840ff;
+  --ansi-14: #20b8ff;
+  --ansi-15: #828282;
+}
+
+/*
+ * Element-level "hack": bb exposes no composer/input fill token — the PromptBox
+ * is painted with bg-background (== --canvas). The custom theme is injected as
+ * the LAST stylesheet, so a rule here out-orders the Tailwind .bg-background
+ * utility (equal specificity, later source wins). We target the stable
+ * data-promptbox hook to give the composer Codex's elevated fill.
+ */
+[data-promptbox] {
+  background-color: var(--composer-surface);
+}
