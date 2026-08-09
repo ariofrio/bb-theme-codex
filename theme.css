@@ -48,9 +48,14 @@
   --primary-foreground: #ffffff;      /* button-foreground (light) */
   --ring: #339cff;
   --sidebar-ring: #339cff;
+  --timeline-accent: var(--primary);  /* unread dot / bb NEW transcript marker */
 
-  /* side-bar-background */
+  /* Sidebar — side-bar-background / list-hover-background */
   --sidebar: #f6f6f6;
+  --sidebar-accent: color-mix(in oklab, var(--ink) 5.35%, transparent);
+
+  /* Settings panel cards — background-panel */
+  --card: color-mix(in oklab, var(--ink) 2%, transparent);
 
   /* input-border */
   --input: color-mix(in oklab, var(--ink) 12%, transparent);
@@ -104,10 +109,14 @@
   --primary-foreground: #0d0d0d;      /* button-foreground (dark) */
   --ring: color-mix(in srgb, #83c3ff 76%, transparent);   /* color-border-focus */
   --sidebar-ring: color-mix(in srgb, #83c3ff 76%, transparent);
+  --timeline-accent: var(--primary);  /* unread dot / bb NEW transcript marker */
 
-  /* side-bar-background (base under Codex's vibrancy material) */
+  /* Sidebar — side-bar-background / list-hover-background */
   --sidebar: #141414;
-  --card: #282828;                    /* elevated-secondary-opaque */
+  --sidebar-accent: color-mix(in oklab, var(--ink) 7.8%, transparent);
+
+  /* Settings panel cards — background-panel */
+  --card: #232323;
   --popover: #2d2d2d;                 /* measured on a live [role=menu]/composer (oklab base) */
   --composer-surface: #2d2d2d;        /* Codex composer fill (see element rule below) */
 
