@@ -43,7 +43,6 @@
   /* Anchors — main-surface-primary / foreground */
   --canvas: #ffffff;
   --ink: #1a1c1f;
-  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
 
   /* Accent — color-token-primary / color-border-focus */
   --primary: #339cff;
@@ -216,33 +215,20 @@
  * the corresponding Tailwind utilities without changing unrelated consumers.
  */
 
-/* Codex uses the macOS system face at a slightly heavier ordinary weight. */
-body,
-[class~="font-normal"] {
-  font-weight: 445;
-}
-
 /* Sidebar thread titles stay full foreground in every interaction state. */
 .bb-sidebar-hover-actions-row {
   color: var(--sidebar-foreground);
-  height: 30px;
-  padding-block: 5px;
-  padding-inline: 8px 5px;
-  border-radius: 12.5px;
 }
 
 /* Codex's right-panel tabs sit on main-surface pills; text carries selection. */
 [class~="group/tab-pill"],
 [class~="group/tab-pill"]:hover {
   background-color: var(--canvas);
-  border-radius: 12.5px;
 }
 
-/* Composer: translucent elevated surface, no ordinary border. */
+/* Composer: translucent elevated surface. */
 [data-promptbox] {
   background-color: var(--composer-surface);
-  border: 0;
-  border-radius: 25px;
   box-shadow:
     0 0 0 0.5px var(--input),
     0 3px 7.5px rgb(0 0 0 / 4%),
@@ -251,18 +237,8 @@ body,
   backdrop-filter: blur(16px);
 }
 
-[data-promptbox] button {
-  height: 28px;
-  border-radius: 9999px;
-  font-size: 13px;
-  font-weight: 445;
-  line-height: 18px;
-}
-
 /* Menus use the same fine outline language with a smaller blur. */
 [role="menu"] {
-  border: 0;
-  border-radius: 15px;
   box-shadow:
     0 0 0 0.5px var(--codex-soft-border),
     0 0 0 0.5px var(--codex-soft-border),
@@ -271,30 +247,16 @@ body,
   backdrop-filter: blur(8px);
 }
 
-[role="menuitem"] {
-  border-radius: 12.5px;
-  font-size: 13px;
-  font-weight: 445;
-  line-height: 18.5714px;
-}
-
 /* Radix puts the tooltip role on a child of the visible content surface. */
 div:has(> [role="tooltip"]) {
-  padding: 4px 8px;
-  border: 1px solid var(--codex-soft-border);
-  border-radius: 12.5px;
   background-color: var(--popover);
   box-shadow: none;
   color: var(--foreground);
-  font-size: 13px;
-  font-weight: 445;
-  line-height: 18.5714px;
 }
 
 /* Settings cards and their secondary copy. */
 main .rounded-lg.border.border-border.bg-card {
   border-color: var(--codex-soft-border);
-  border-radius: 20px;
 }
 
 main .bg-card [class~="text-subtle-foreground/75"] {
@@ -305,13 +267,6 @@ main .bg-card [class~="text-subtle-foreground/75"] {
 main .bg-card button[aria-haspopup="menu"] {
   background-color: var(--codex-settings-control);
   border-color: var(--codex-soft-border);
-  border-radius: 12.5px;
-  gap: 4px;
-  height: 28px;
-  padding-inline: 12px;
-  font-size: 14px;
-  font-weight: 445;
-  line-height: 18px;
 }
 
 main .bg-card button[aria-haspopup="menu"]:hover,
@@ -332,13 +287,7 @@ main .bg-card [role="switch"][data-state="unchecked"] {
 main .bg-card button[class~="border-input"][class~="bg-transparent"] {
   background-color: var(--codex-button-fill);
   border-color: transparent;
-  border-radius: 12.5px;
   color: var(--foreground);
-  gap: 4px;
-  height: 28px;
-  font-size: 14px;
-  font-weight: 445;
-  line-height: 18px;
 }
 
 main .bg-card button[class~="border-input"][class~="bg-transparent"]:hover {
@@ -348,7 +297,6 @@ main .bg-card button[class~="border-input"][class~="bg-transparent"]:hover {
 /* Icon-only Settings actions are tertiary until their component hover. */
 main button[class~="size-7"][class~="text-muted-foreground"] {
   background-color: transparent;
-  border-radius: 12.5px;
   color: var(--subtle-foreground);
 }
 
@@ -374,35 +322,12 @@ main button[class~="size-7"][class~="text-muted-foreground"]:hover {
   background-color: var(--codex-inline-code);
 }
 
-[data-timeline-row-list] [data-markdown-preview] p,
-[data-timeline-row-list] [data-markdown-preview] li {
-  font-size: 14px;
-  font-weight: 445;
-  line-height: 22px;
-}
-
-[data-timeline-row-list] .timeline-row-header {
-  font-size: 14px;
-  font-weight: 445;
-  line-height: 21px;
-}
-
-/* User messages are 20px, borderless, 5%-foreground bubbles. */
+/* User-message bubble and action colors. */
 [data-timeline-row-list] div[class~="rounded-xl"][class~="border-border-seam"][class~="bg-surface-recessed"] {
   background-color: var(--codex-user-bubble);
-  border: 0;
-  border-radius: 20px;
-  padding: 8px 12px;
-}
-
-[data-timeline-row-list] [class~="group/message"]:has(> div[class~="rounded-xl"][class~="border-border-seam"][class~="bg-surface-recessed"]) {
-  max-width: 77%;
 }
 
 [data-timeline-row-list] [class~="group/message"] button[class~="size-5"] {
-  width: 26px;
-  height: 26px;
-  border-radius: 10px;
   color: var(--subtle-foreground);
 }
 
