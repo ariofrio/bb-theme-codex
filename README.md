@@ -4,6 +4,9 @@ An unofficial [bb](https://getbb.app) theme that closely matches the OpenAI
 Codex desktop app. Its colors and shadows are based on computed styles from
 corresponding rendered leaves in both light and dark mode.
 
+This theme deliberately does not change the dimensions, shapes, or positions
+of any elements. Those are explicitly outside its scope.
+
 ## Install
 
 ```sh
