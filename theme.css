@@ -52,10 +52,10 @@
 
   /* Sidebar — side-bar-background / list-hover-background */
   --sidebar: #f6f6f6;
-  --sidebar-accent: color-mix(in oklab, var(--ink) 5.35%, transparent);
+  --sidebar-accent: color-mix(in oklab, var(--ink) 5.5%, transparent);
 
   /* Settings panel cards — background-panel */
-  --card: color-mix(in oklab, var(--ink) 2%, transparent);
+  --card: #ffffff;
 
   /* input-border */
   --input: color-mix(in oklab, var(--ink) 12%, transparent);
@@ -64,8 +64,10 @@
   --composer-surface: #ffffff;
 
   /* Component-only values with no distinct bb token */
-  --codex-soft-border: color-mix(in oklab, var(--ink) 8.2%, transparent);
-  --codex-settings-control: #ffffff;
+  --codex-soft-border: color-mix(in oklab, var(--ink) 8%, transparent);
+  --codex-settings-control: #f6f6f6;
+  --codex-menu-surface: color-mix(in oklab, #ffffff 90%, transparent);
+  --codex-panel-surface: #ffffff;
   --codex-button-fill: color-mix(in oklab, var(--ink) 5%, transparent);
   --codex-button-fill-hover: color-mix(in oklab, var(--ink) 10%, transparent);
   --codex-switch-off: color-mix(in oklab, var(--ink) 10%, transparent);
@@ -152,6 +154,9 @@
 
   /* Dark variants of component-only values */
   --codex-settings-control: #141414;
+  --codex-soft-border: color-mix(in oklab, var(--ink) 8.2%, transparent);
+  --codex-menu-surface: #2d2d2d;
+  --codex-panel-surface: #2d2d2d;
   --codex-inline-code: color-mix(in oklab, var(--ink) 10.7%, transparent);
   --codex-worked-metadata: color-mix(in srgb, var(--ink) 60%, transparent);
   --codex-transcript-link: #9ccfff;
@@ -236,6 +241,12 @@
   color: var(--subtle-foreground);
 }
 
+/* Project/group titles are ordinary sidebar items, not section headings. */
+[data-sidebar-sticky-project-item] [data-sidebar="group-label"],
+[data-sidebar-sticky-project-item] [data-sidebar="group-label"]:hover {
+  color: color-mix(in srgb, var(--sidebar-foreground) 85%, transparent);
+}
+
 /* Codex's right-panel tabs sit on main-surface pills; text carries selection. */
 [class~="group/tab-pill"],
 [class~="group/tab-pill"]:hover {
@@ -244,7 +255,7 @@
 
 /* Right utility panel: Codex uses the elevated dropdown/main-control surface. */
 aside[class~="bg-sidebar"][class~="border-l"] {
-  background-color: var(--popover);
+  background-color: var(--codex-panel-surface);
   border-color: transparent;
   box-shadow:
     -8px 0 16px -8px rgb(0 0 0 / 18%),
@@ -278,12 +289,18 @@ main[class~="bg-background"][class~="flex-1"] {
 
 /* Menus use the same fine outline language with a smaller blur. */
 [role="menu"] {
+  background-color: var(--codex-menu-surface);
   box-shadow:
     0 0 0 0.5px var(--codex-soft-border),
     0 0 0 0.5px var(--codex-soft-border),
     0 8px 16px -4px rgb(0 0 0 / 12%);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
+}
+
+[role="menuitem"]:hover,
+[role="menuitem"]:focus {
+  background-color: var(--sidebar-accent);
 }
 
 /* Radix puts the tooltip role on a child of the visible content surface. */
