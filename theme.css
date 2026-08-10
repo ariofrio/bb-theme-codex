@@ -1,31 +1,30 @@
 /*
  * codex — bb theme replicating the OpenAI Codex desktop app.
  *
- * Values verified against the LIVE Codex app DOM (not just its stylesheet, and
- * not pixel-sampled): launched Codex with --remote-debugging-port, read the
- * resolved computed value of each design token at :root via CDP, for BOTH
- * appearances (dark = OS dark; light = read after flipping OS appearance, then
- * reverted). Role attribution was checked by inspecting real elements
- * (--color-token-primary/link on actual links, main-surface on the content
- * pane, etc.).
+ * Values were sourced from the LIVE Codex app DOM (not pixel-sampled). A match
+ * is established from corresponding rendered leaves and their effective
+ * ancestors in both apps; root tokens and inherited parent declarations are
+ * used only to trace a measured leaf value back to its source.
  *
  * Notes on Codex specifics that don't map 1:1 to bb:
  *   - Sidebar: Codex renders it with a native macOS vibrancy material; the DOM
  *     side-bar-background token (#141414 dark / #f6f6f6 light) is the base under
  *     that material. bb has no vibrancy yet, so it shows the base directly.
- *   - Accent vs button: Codex's interactive accent / links / focus is blue
- *     (--color-token-primary), but its primary *button* is monochrome
- *     (white on dark / near-black on light). bb funnels links+focus+selection+
- *     buttons through one --primary, so --primary = the blue accent;
- *     --primary-foreground uses Codex's resolved button-foreground.
+ *   - Accent vs button vs transcript link: Codex's general interactive accent
+ *     and focus treatment is blue, its primary *button* is monochrome, and its
+ *     rendered transcript-link leaves use a separate blue. bb funnels several
+ *     general roles through --primary, while transcript links are targeted
+ *     below with their measured leaf color.
  *   - Composer: Codex uses a rounded translucent *fill* with no border; bb
  *     draws a bordered field, so --input carries Codex's input-border value.
  *   - --ansi-bg-fg-* has no Codex token because the terminal computes readable
  *     text dynamically. The bb values below reproduce that contrast decision
  *     for each fixed ANSI palette entry.
  *
- * Role checks by driving the live app (CDP clicks + node reads):
- *   - --primary/--file-accent: real links/icons compute --color-token-primary.
+ * Role checks by driving the live app (CDP clicks + computed leaf reads):
+ *   - --primary/--file-accent: corresponding general accent/icon leaves.
+ *   - --codex-transcript-link: the text-bearing descendant inside actual
+ *     transcript anchors, not the ordinary-foreground anchor wrapper.
  *   - --popover: opened a real [role=menu]; it renders the same oklab base as
  *     the composer (~#2d2d2d), NOT --color-token-menu-background (#363636).
  *   - --diff-added/removed: the React diff uses the Tailwind utility
@@ -65,8 +64,8 @@
   --composer-surface: #ffffff;
 
   /* Component-only values with no distinct bb token */
-  --codex-soft-border: color-mix(in oklab, var(--ink) 8%, transparent);
-  --codex-settings-control: color-mix(in oklab, var(--ink) 2%, transparent);
+  --codex-soft-border: color-mix(in oklab, var(--ink) 8.2%, transparent);
+  --codex-settings-control: #ffffff;
   --codex-button-fill: color-mix(in oklab, var(--ink) 5%, transparent);
   --codex-button-fill-hover: color-mix(in oklab, var(--ink) 10%, transparent);
   --codex-switch-off: color-mix(in oklab, var(--ink) 10%, transparent);
@@ -152,13 +151,13 @@
   --composer-surface: color-mix(in oklab, #2d2d2d 86.4706%, transparent);
 
   /* Dark variants of component-only values */
-  --codex-settings-control: color-mix(in oklab, var(--ink) 3%, transparent);
+  --codex-settings-control: #141414;
   --codex-inline-code: color-mix(in oklab, var(--ink) 10.7%, transparent);
   --codex-worked-metadata: color-mix(in srgb, var(--ink) 60%, transparent);
   --codex-transcript-link: #9ccfff;
 
   /* input-border */
-  --input: color-mix(in oklab, var(--ink) 16%, transparent);
+  --input: color-mix(in oklab, var(--ink) 15.7%, transparent);
 
   /* Semantic / status */
   --destructive: #ff6764;             /* danger-solid */
@@ -215,15 +214,55 @@
  * the corresponding Tailwind utilities without changing unrelated consumers.
  */
 
-/* Sidebar thread titles stay full foreground in every interaction state. */
-.bb-sidebar-hover-actions-row {
+/*
+ * Sidebar text is matched at the rendered row/label roles rather than from the
+ * sidebar's inherited foreground. Codex keeps idle and hovered thread/project
+ * titles at 85%, promotes only the selected title to full foreground, and uses
+ * 50% foreground for section headings.
+ */
+.bb-sidebar-hover-actions-row[class~="group/thread-row"],
+.bb-sidebar-hover-actions-row[class~="group/thread-row"]:hover {
+  color: color-mix(in srgb, var(--sidebar-foreground) 85%, transparent);
+}
+
+.bb-sidebar-hover-actions-row[class~="group/thread-row"].bg-state-active,
+.bb-sidebar-hover-actions-row[class~="group/thread-row"].bg-state-active:hover {
+  background-color: var(--sidebar-accent);
   color: var(--sidebar-foreground);
+}
+
+.bb-sidebar-hover-actions-row[class~="text-subtle-foreground/75"],
+.bb-sidebar-hover-actions-row[class~="text-subtle-foreground/75"]:hover {
+  color: var(--subtle-foreground);
 }
 
 /* Codex's right-panel tabs sit on main-surface pills; text carries selection. */
 [class~="group/tab-pill"],
 [class~="group/tab-pill"]:hover {
   background-color: var(--canvas);
+}
+
+/* Right utility panel: Codex uses the elevated dropdown/main-control surface. */
+aside[class~="bg-sidebar"][class~="border-l"] {
+  background-color: var(--popover);
+  border-color: transparent;
+  box-shadow:
+    -8px 0 16px -8px rgb(0 0 0 / 18%),
+    0 0 0 0.5px var(--input),
+    0 3px 7.5px rgb(0 0 0 / 4%),
+    0 0 20px rgb(0 0 0 / 5%);
+}
+
+aside[class~="bg-sidebar"][class~="border-l"] [class~="bg-sidebar"] {
+  background-color: transparent;
+}
+
+/* Codex elevates the main content surface above its sidebar material. */
+main[class~="bg-background"][class~="flex-1"] {
+  box-shadow:
+    0 0 0 0.5px var(--input),
+    0 3px 7.5px rgb(0 0 0 / 4%),
+    0 0 20px rgb(0 0 0 / 5%);
 }
 
 /* Composer: translucent elevated surface. */
@@ -267,6 +306,7 @@ main .bg-card [class~="text-subtle-foreground/75"] {
 main .bg-card button[aria-haspopup="menu"] {
   background-color: var(--codex-settings-control);
   border-color: var(--codex-soft-border);
+  box-shadow: 0 1px 2px -1px rgb(0 0 0 / 8%);
 }
 
 main .bg-card button[aria-haspopup="menu"]:hover,
@@ -274,13 +314,21 @@ main .bg-card button[aria-haspopup="menu"][data-state="open"] {
   background-color: var(--sidebar-accent);
 }
 
-/* Switch track colors. Thumb treatment remains separate and intentionally untouched. */
+/* Switch track and thumb colors/elevation; native bb geometry is retained. */
 main .bg-card [role="switch"][data-state="checked"] {
   background-color: #339cff;
+  box-shadow: none;
 }
 
 main .bg-card [role="switch"][data-state="unchecked"] {
   background-color: var(--codex-switch-off);
+  box-shadow: none;
+}
+
+main .bg-card [role="switch"] > span {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 1px 2px -1px rgb(0 0 0 / 8%);
 }
 
 /* Visible Settings card actions use a faint fill and transparent border. */
@@ -308,6 +356,16 @@ main button[class~="size-7"][class~="text-muted-foreground"]:hover {
 /* Transcript-specific text and surfaces. */
 [data-timeline-row-list] [title^="Worked for"] > span {
   color: var(--codex-worked-metadata);
+}
+
+/* bb otherwise compounds the intended text/icon colors with a 40% wrapper. */
+[data-timeline-row-list] .timeline-row-header > span > [class~="opacity-40"] {
+  opacity: 1;
+}
+
+[data-timeline-row-list] .timeline-row-header > svg {
+  color: color-mix(in srgb, var(--ink) 40%, transparent);
+  opacity: 1;
 }
 
 [data-markdown-preview] a {
