@@ -1,5 +1,8 @@
-> **Note:** This theme has moved to the
+> [!IMPORTANT]
+> This theme has moved to the
 > [ChatGPT theme plugin](https://github.com/ariofrio/bb-plugins/tree/main/plugins/bb-plugin-chatgpt-theme).
+
+---
 
 # Codex theme for bb
 
