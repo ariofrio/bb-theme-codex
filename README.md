@@ -1,3 +1,6 @@
+> **Note:** This theme has moved to the
+> [Codex theme plugin](https://github.com/ariofrio/bb-plugins/tree/main/plugins/bb-plugin-codex-theme).
+
 # Codex theme for bb
 
 An unofficial [bb](https://getbb.app) theme that closely matches the OpenAI
