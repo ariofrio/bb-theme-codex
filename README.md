@@ -4,19 +4,18 @@ An unofficial [bb](https://getbb.app) theme that closely matches the OpenAI
 ChatGPT (née Codex) desktop app. Its colors and shadows are based on computed styles from
 corresponding rendered leaves in both light and dark mode.
 
-<picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="assets/codex-theme-dark.png"
-  >
-  <img
-    alt="The Codex theme in bb, showing several projects and an analytics dashboard thread"
-    src="assets/codex-theme-light.png"
-  >
-</picture>
-
 This theme deliberately does not change the dimensions, shapes, or positions
 of any elements. Those are explicitly outside its scope.
+
+## Preview
+
+**Light**
+
+![The Codex theme in bb in light mode](assets/codex-theme-light.png)
+
+**Dark**
+
+![The Codex theme in bb in dark mode](assets/codex-theme-dark.png)
 
 ## Install
 
